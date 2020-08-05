@@ -35,7 +35,7 @@ RUN apt-get update && apt-get install -y \
 
 # Install rust using rustup
 ARG CHANNEL="nightly"
-ENV RUSTUP_VER="1.21.1" \
+ENV RUSTUP_VER="1.22.1" \
     RUST_ARCH="x86_64-unknown-linux-gnu"
 RUN curl "https://static.rust-lang.org/rustup/archive/${RUSTUP_VER}/${RUST_ARCH}/rustup-init" -o rustup-init && \
     chmod +x rustup-init && \
@@ -47,10 +47,10 @@ RUN curl "https://static.rust-lang.org/rustup/archive/${RUSTUP_VER}/${RUST_ARCH}
 # Convenience list of versions and variables for compilation later on
 # This helps continuing manually if anything breaks.
 ENV SSL_VER="1.0.2u" \
-    CURL_VER="7.70.0" \
+    CURL_VER="7.71.1" \
     ZLIB_VER="1.2.11" \
     PQ_VER="11.8" \
-    SQLITE_VER="3320200" \
+    SQLITE_VER="3320300" \
     CC=musl-gcc \
     PREFIX=/musl \
     PATH=/usr/local/bin:/root/.cargo/bin:$PATH \
