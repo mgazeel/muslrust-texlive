@@ -44,6 +44,10 @@ RUN curl "https://static.rust-lang.org/rustup/archive/${RUSTUP_VER}/${RUST_ARCH}
     ~/.cargo/bin/rustup target add x86_64-unknown-linux-musl && \
     echo "[build]\ntarget = \"x86_64-unknown-linux-musl\"" > ~/.cargo/config
 
+# Allow non-root access to cargo
+RUN chmod a+X /root
+COPY etc/profile.d/cargo.sh /etc/profile.d/cargo.sh
+
 # Convenience list of versions and variables for compilation later on
 # This helps continuing manually if anything breaks.
 ENV SSL_VER="1.0.2u" \
