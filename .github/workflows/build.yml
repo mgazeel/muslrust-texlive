@@ -11,7 +11,7 @@ on:
 
 jobs:
   docker:
-    name: 'Debug Build'
+    name: 'Nightly Build'
     runs-on: 'ubuntu-latest'
     steps:
     - uses: 'actions/checkout@v2'
@@ -23,7 +23,7 @@ jobs:
         username: clux
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Build image
+    - name: Build nightly image
       uses: docker/build-push-action@v2
       with:
         context: .
@@ -40,6 +40,10 @@ jobs:
         echo "TAG1=clux/muslrust:${RUST_CHANNEL}" >> $GITHUB_ENV
         echo "TAG2=clux/muslrust:${RUST_CHANNEL}-${RUST_DATE}" >> $GITHUB_ENV
         echo "TAG3=clux/muslrust:${RUST_VER}-${RUST_CHANNEL}-${RUST_DATE}" >> $GITHUB_ENV
+
+    - name: Run tests
+      shell: bash
+      run: make test
 
     - name: Push image under computed tags
       uses: docker/build-push-action@v2
