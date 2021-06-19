@@ -50,4 +50,4 @@ jobs:
       with:
         context: .
         push: ${{ github.event_name != 'pull_request' }}
-        tags: latest,${{ env.TAG1 }},${{ env.TAG2 }},${{ env.TAG3 }}
+        tags: clux/muslrust:latest,${{ env.TAG1 }},${{ env.TAG2 }},${{ env.TAG3 }}
