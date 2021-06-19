@@ -5,7 +5,7 @@ RUST_CHANNEL="nightly"
 .PHONY: build run test push
 
 build:
-	docker build --build-arg CHANNEL="${RUST_CHANNEL}" -t clux/muslrust .
+	docker build --build-arg CHANNEL="${RUST_CHANNEL}" -t clux/muslrust:temp .
 run:
 	docker run -v $$PWD/test:/volume  -w /volume -it clux/muslrust /bin/bash
 
