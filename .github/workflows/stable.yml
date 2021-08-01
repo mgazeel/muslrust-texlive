@@ -1,17 +1,17 @@
-name: ci
+name: stable
 on:
   schedule:
-    - cron: '0 10 * * *' # everyday at 10am
+    - cron: '0 12 * * *' # everyday at noon
   push:
     branches:
-      - 'master'
+      - 'stable'
   pull_request:
     branches:
-      - 'master'
+      - 'stable'
 
 jobs:
   docker:
-    name: 'Nightly Build'
+    name: 'Stable Build'
     runs-on: 'ubuntu-latest'
     steps:
     - uses: 'actions/checkout@v2'
@@ -23,7 +23,12 @@ jobs:
         username: clux
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Build nightly image
+    - name: Check if we need a new stable
+      shell: bash
+      run: |
+        pip3 install --user toml
+        python3 check_stable.py
+    - name: Build stable image
       uses: docker/build-push-action@v2
       with:
         context: .
@@ -36,11 +41,10 @@ jobs:
         docker run clux/muslrust:temp rustc --version
         RUST_VER="$(docker run clux/muslrust:temp rustc --version | grep -oE "[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]")"
         RUST_DATE="$(date +"%Y-%m-%d")"
-        RUST_CHANNEL=nightly
+        RUST_CHANNEL=stable
         echo "TAG1=clux/muslrust:${RUST_CHANNEL}" >> $GITHUB_ENV
-        echo "TAG2=clux/muslrust:${RUST_CHANNEL}-${RUST_DATE}" >> $GITHUB_ENV
-        echo "TAG3=clux/muslrust:${RUST_VER}-${RUST_CHANNEL}-${RUST_DATE}" >> $GITHUB_ENV
-
+        echo "TAG2=clux/muslrust:${RUST_VER}-${RUST_CHANNEL}" >> $GITHUB_ENV
+        echo "TAG3=clux/muslrust:${RUST_VER}" >> $GITHUB_ENV
     - name: Run tests
       shell: bash
       run: make test
@@ -50,4 +54,4 @@ jobs:
       with:
         context: .
         push: ${{ github.event_name != 'pull_request' }}
-        tags: clux/muslrust:latest,${{ env.TAG1 }},${{ env.TAG2 }},${{ env.TAG3 }}
+        tags: ${{ env.TAG1 }},${{ env.TAG2 }},${{ env.TAG3 }}
