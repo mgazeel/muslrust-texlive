@@ -50,10 +50,17 @@ jobs:
         echo "TAG3=clux/muslrust:${RUST_VER}" >> $GITHUB_ENV
       if: ${{ env.NEEDS_STABLE }} == '1'
 
-    - name: Run tests
+    - name: Echo tags
       shell: bash
-      if: ${{ env.NEEDS_STABLE }} == '1'
-      run: make test
+      run: |
+        echo $TAG1
+        echo $TAG2
+        echo $TAG3
+
+    #- name: Run tests
+    #  shell: bash
+    #  if: ${{ env.NEEDS_STABLE }} == '1'
+    #  run: make test
 
     #- name: Push image under computed tags
     #  uses: docker/build-push-action@v2
