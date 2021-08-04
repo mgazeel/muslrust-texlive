@@ -38,6 +38,7 @@ def stable_tag_exists(stable_ver):
 if __name__ == '__main__':
     latest_stable = rust_stable_version()
     tag = f'{latest_stable}-stable'
+    print(tag)
     exists = stable_tag_exists(tag)
     if not exists:
         print(latest_stable)
