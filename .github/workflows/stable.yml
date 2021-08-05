@@ -4,7 +4,7 @@ on:
     - cron: '0 12 * * *' # everyday at noon
   push:
     branches:
-      - 'master'
+      - 'stable'
   pull_request:
     branches:
       - 'stable'
