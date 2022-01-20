@@ -4,10 +4,10 @@ on:
     - cron: '0 12 * * *' # everyday at noon
   push:
     branches:
-      - 'master'
+      - 'main'
   pull_request:
     branches:
-      - 'master'
+      - 'main'
 
 jobs:
   docker:
