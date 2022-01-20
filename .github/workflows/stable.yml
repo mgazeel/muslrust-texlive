@@ -4,10 +4,10 @@ on:
     - cron: '0 12 * * *' # everyday at noon
   push:
     branches:
-      - 'stable'
+      - 'master'
   pull_request:
     branches:
-      - 'stable'
+      - 'master'
 
 jobs:
   docker:
@@ -15,8 +15,6 @@ jobs:
     runs-on: 'ubuntu-latest'
     steps:
     - uses: 'actions/checkout@v2'
-      with:
-        ref: 'stable'
 
     - name: Login to DockerHub
       if: github.event_name != 'pull_request'
@@ -37,6 +35,7 @@ jobs:
       with:
         context: .
         push: false
+        file: "{context}/Dockerfile.stable"
         tags: clux/muslrust:temp
       if: ${{ env.NEEDS_STABLE }} == '1'
 
@@ -69,5 +68,6 @@ jobs:
       if: ${{ env.NEEDS_STABLE }} == '1'
       with:
         context: .
+        file: "{context}/Dockerfile.stable"
         push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ env.TAG1 }},${{ env.TAG2 }},${{ env.TAG3 }}
