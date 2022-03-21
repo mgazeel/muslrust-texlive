@@ -5,7 +5,7 @@
 [![docker pulls](https://img.shields.io/docker/pulls/clux/muslrust.svg)](
 https://hub.docker.com/r/clux/muslrust/)
 
-A plain docker environment for building static binaries compiled with rust and linked against musl instead of glibc. Built nightly on travis.
+A plain docker environment for building static binaries compiled with rust and linked against musl instead of glibc. Built nightly with github actions.
 
 This is useful if you require external C dependencies, and/or need a CI image to compile a musl binary. Locally, you could do `rustup target add x86_64-unknown-linux-musl` if you don't need C dependencies.
 
@@ -38,7 +38,7 @@ or you can use it to [embed your no-dependency binary straight into github relea
 
 ## Docker builds
 
-Latest is always the last built nightly pushed by travis. To pin against specific builds, see the [available tags](https://hub.docker.com/r/clux/muslrust/tags/) on the docker hub.
+Latest is always the last built nightly pushed by github actions. To pin against specific builds, see the [available tags](https://hub.docker.com/r/clux/muslrust/tags/) on the docker hub.
 
 ## C Libraries
 
