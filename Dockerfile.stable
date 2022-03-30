@@ -50,11 +50,11 @@ COPY etc/profile.d/cargo.sh /etc/profile.d/cargo.sh
 
 # Convenience list of versions and variables for compilation later on
 # This helps continuing manually if anything breaks.
-ENV SSL_VER="1.1.1l" \
-    CURL_VER="7.79.1" \
-    ZLIB_VER="1.2.11" \
+ENV SSL_VER="1.1.1n" \
+    CURL_VER="7.82.0" \
+    ZLIB_VER="1.2.12" \
     PQ_VER="11.12" \
-    SQLITE_VER="3360000" \
+    SQLITE_VER="3380200" \
     CC=musl-gcc \
     PREFIX=/musl \
     PATH=/usr/local/bin:/root/.cargo/bin:$PATH \
