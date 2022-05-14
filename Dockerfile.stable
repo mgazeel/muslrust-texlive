@@ -1,4 +1,4 @@
-FROM ubuntu:xenial
+FROM ubuntu:jammy
 LABEL maintainer="Eirik Albrigtsen <sszynrae@gmail.com>"
 
 # Required packages:
