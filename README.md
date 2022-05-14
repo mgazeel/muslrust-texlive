@@ -62,8 +62,8 @@ Clone, tweak, build, and run tests:
 
 ```sh
 git clone git@github.com:clux/muslrust.git && cd muslrust
-make build
-make test
+just build
+just test
 ```
 
 Before we push a new version of muslrust we ensure that we can use and statically link:
