@@ -1,0 +1,11 @@
+[package]
+authors = ["clux <sszynrae@gmail.com>"]
+name = "rustlscrate"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+hyper = { version = "0.14.18", features = ["client"] }
+hyper-rustls = "0.23.0"
+rustls = "*"
+tokio = { version = "1.18.2", features = ["rt-multi-thread", "macros"] }

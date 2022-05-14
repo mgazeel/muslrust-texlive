@@ -12,7 +12,7 @@ docker_build() {
     cargo build
   cd "test/${crate}"
   ./target/x86_64-unknown-linux-musl/debug/"${crate}"
-  ldd "target/x86_64-unknown-linux-musl/debug/${crate}" 2>&1 | grep -q "not a dynamic" && \
+  ldd "target/x86_64-unknown-linux-musl/debug/${crate}" 2>&1 | grep -qE "not a dynamic|statically linked" && \
     echo "${crate} is a static executable"
 }
 
@@ -27,7 +27,7 @@ docker_build_ekidd() {
     cargo build -vv
   cd "test/${crate}"
   ./target/x86_64-unknown-linux-musl/debug/"${crate}"
-  ldd "target/x86_64-unknown-linux-musl/debug/${crate}" 2>&1 | grep -q "not a dynamic" && \
+  ldd "target/x86_64-unknown-linux-musl/debug/${crate}" 2>&1 | grep -qE "not a dynamic|statically linked" && \
     echo "${crate} is a static executable"
 }
 
@@ -41,7 +41,7 @@ docker_build_golddranks() {
     cargo build -vv --target=x86_64-unknown-linux-musl
   cd "test/${crate}"
   ./target/x86_64-unknown-linux-musl/debug/"${crate}"
-  ldd "target/x86_64-unknown-linux-musl/debug/${crate}" 2>&1 | grep -q "not a dynamic" && \
+  ldd "target/x86_64-unknown-linux-musl/debug/${crate}" 2>&1 | grep -qE "not a dynamic|statically linked" && \
     echo "${crate} is a static executable"
 }
 

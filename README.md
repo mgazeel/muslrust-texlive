@@ -72,10 +72,10 @@ Before we push a new version of muslrust we ensure that we can use and staticall
 - [x] `diesel` (postgres and sqlite - see note below for postgres)
 - [x] `hyper`
 - [x] `curl`
+- [x] `rustls`
 - [x] `openssl`
 - [x] `flate2`
 - [x] `rand`
-- [ ] `rocket` (waiting for stable release)
 
 ## SSL Verification
 

@@ -1,7 +1,0 @@
-[package]
-authors = ["clux <sszynrae@gmail.com>"]
-name = "rocketcrate"
-version = "0.1.0"
-
-[dependencies]
-rocket = "0.5.0-rc.1"

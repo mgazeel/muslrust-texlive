@@ -15,14 +15,14 @@ test-curl:
 	./test.sh curl
 test-serde:
 	./test.sh serde
-test-rocket:
-	./test.sh rocket
 test-pq:
 	./test.sh pq
 test-dieselpg:
 	./test.sh dieselpg
 test-dieselsqlite:
 	./test.sh dieselsqlite
+test-rustls:
+	./test.sh rustls
 test-ssl:
 	./test.sh ssl
 test-zlib:
@@ -39,5 +39,5 @@ clean-builds:
 	sudo rm -f test/dieselsqlitecrate/main.db
 clean: clean-docker clean-lock clean-builds
 
-test: test-plain test-ssl test-pq test-serde test-curl test-zlib test-hyper test-dieselpg test-dieselsqlite
-.PHONY: test-plain test-ssl test-pq test-rocket test-serde test-curl test-zlib test-hyper test-dieselpg test-dieselsqlite
+test: test-plain test-ssl test-rustls test-pq test-serde test-curl test-zlib test-hyper test-dieselpg test-dieselsqlite
+.PHONY: test-plain test-ssl test-rustls test-pq test-rocket test-serde test-curl test-zlib test-hyper test-dieselpg test-dieselsqlite
