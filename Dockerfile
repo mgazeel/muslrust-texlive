@@ -13,7 +13,7 @@ LABEL maintainer="Eirik Albrigtsen <sszynrae@gmail.com>"
 # - automake autoconf libtool - support crates building C deps as part cargo build
 # recently removed:
 # cmake (not used), nano, zlib1g-dev
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get install -y \
+RUN apt-get update && apt-get install -y \
   musl-dev \
   musl-tools \
   file \
@@ -136,7 +136,9 @@ ENV PATH=$PREFIX/bin:$PATH \
     OPENSSL_DIR=$PREFIX \
     SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt \
     SSL_CERT_DIR=/etc/ssl/certs \
-    LIBZ_SYS_STATIC=1
+    LIBZ_SYS_STATIC=1 \
+    DEBIAN_FRONTEND=noninteractive \
+    TZ=Etc/UTC
 
 # Allow ditching the -w /volume flag to docker run
 WORKDIR /volume
