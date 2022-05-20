@@ -13,7 +13,7 @@ LABEL maintainer="Eirik Albrigtsen <sszynrae@gmail.com>"
 # - automake autoconf libtool - support crates building C deps as part cargo build
 # recently removed:
 # cmake (not used), nano, zlib1g-dev
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get install -y \
   musl-dev \
   musl-tools \
   file \
