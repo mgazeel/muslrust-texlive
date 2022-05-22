@@ -136,7 +136,9 @@ ENV PATH=$PREFIX/bin:$PATH \
     OPENSSL_DIR=$PREFIX \
     SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt \
     SSL_CERT_DIR=/etc/ssl/certs \
-    LIBZ_SYS_STATIC=1
+    LIBZ_SYS_STATIC=1 \
+    DEBIAN_FRONTEND=noninteractive \
+    TZ=Etc/UTC
 
 # Allow ditching the -w /volume flag to docker run
 WORKDIR /volume
