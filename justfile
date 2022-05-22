@@ -1,3 +1,5 @@
+# See https://just.systems/man/
+
 RUST_CHANNEL := "stable"
 
 default:

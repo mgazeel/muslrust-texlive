@@ -2,43 +2,50 @@
 
 [![nightly](https://github.com/clux/muslrust/actions/workflows/nightly.yml/badge.svg)](https://github.com/clux/muslrust/actions/workflows/nightly.yml)
 [![stable](https://github.com/clux/muslrust/actions/workflows/stable.yml/badge.svg)](https://github.com/clux/muslrust/actions/workflows/stable.yml)
-[![docker pulls](https://img.shields.io/docker/pulls/clux/muslrust.svg)](
-https://hub.docker.com/r/clux/muslrust/)
+[![docker pulls](https://img.shields.io/docker/pulls/clux/muslrust.svg)](https://hub.docker.com/r/clux/muslrust/tags)
 
-A plain docker environment for building static binaries compiled with rust and linked against musl instead of glibc. Built nightly with github actions.
+A docker environment for building **static** rust binaries for `x86_64` **linux** environments using **[musl](https://musl.libc.org/)**. Built daily via [github actions](https://github.com/clux/muslrust/actions).
 
-This is useful if you require external C dependencies, and/or need a CI image to compile a musl binary. Locally, you could do `rustup target add x86_64-unknown-linux-musl` if you don't need C dependencies.
+Binaries compiled with `muslrust` are **light-weight**, call straight into the kernel without other system library dependencies, can be shipped to most linux distributions without compatibility issues, and can be inserted into lightweight docker images such as [static distroless](https://github.com/GoogleContainerTools/distroless/blob/main/base/README.md), [scratch](https://hub.docker.com/_/scratch), or [alpine](https://hub.docker.com/_/alpine) without further installs.
 
-This container [comes with a bunch of statically compiled C libraries](#c-libraries) using `musl-gcc` so that we can statically link against these as well.
+The goal is to **simplify** the creation of small and **efficient cloud containers**, or **stand-alone linux binary releases**.
 
-For embedded targets, consider [cross](https://github.com/japaric/cross) as a more general solution.
+This image includes popular [C libraries](#c-libraries) compiled with `musl-gcc`, enabling static builds even when these libraries are used.
 
 ## Usage
 
 Pull and run from a rust project root:
 
 ```sh
-docker pull clux/muslrust
-docker run -v $PWD:/volume --rm -t clux/muslrust cargo build
+docker pull clux/muslrust:stable
+docker run -v $PWD:/volume --rm -t clux/muslrust:stable cargo build --release
 ```
 
 You should have a static executable in the target folder:
 
 ```sh
-ldd target/x86_64-unknown-linux-musl/debug/EXECUTABLE
+ldd target/x86_64-unknown-linux-musl/release/EXECUTABLE
         not a dynamic executable
 ```
 
-From there on, you can include it in a blank docker image, distroless/static, or alpine (if you absolutely need kubectl exec), and you can end up with say:
 
-- [4MB blog image (blank image)](https://github.com/clux/blog).
-- [6MB kubernetes controller with actix (distroless/static)](https://github.com/kube-rs/controller-rs)
 
-or you can use it to [embed your no-dependency binary straight into github releases](https://github.com/gleam-lang/gleam/blob/8333cd3a402b920dc774a4d8761ca28ceff09738/.github/workflows/release.yaml) and not have to worry about what libc your users are on.
+## Examples
 
-## Docker builds
+- [Kubernetes controller with actix-web using plain distroless/static](https://github.com/kube-rs/controller-rs/blob/main/Dockerfile)
+- [Kubernetes reflector with axum using builder pattern](https://github.com/kube-rs/version-rs/blob/main/Dockerfile)
+- [Kubernetes controller using cargo-chef for caching layers](https://github.com/qualified/ephemeron/blob/main/k8s/controller/Dockerfile)
+- [Github release assets uploaded via github actions](https://github.com/kube-rs/kopium/blob/main/.github/workflows/release.yml)
 
-Latest is always the last built nightly pushed by github actions. To pin against specific builds, see the [available tags](https://hub.docker.com/r/clux/muslrust/tags/) on the docker hub.
+The binaries and images for small apps generally end up around ~6MB compressed or ~20MB uncompressed without stripping.
+
+The **recommended** production image is **[static distroless](https://github.com/GoogleContainerTools/distroless/blob/main/base/README.md)** because it avoids you dealing with below SSL issues (common with `scratch`), and it disallows shelling in via `kubectl exec` (use `alpine` if you want this).
+
+## Available Tags
+
+The standard tags are **`:stable`** or a dated **`:nightly-{YYYY-mm-dd}`**.
+
+For pinned, or historical builds, see the [available tags on dockerhub](https://hub.docker.com/r/clux/muslrust/tags/).
 
 ## C Libraries
 
@@ -50,11 +57,7 @@ The following system libraries are compiled against `musl-gcc`:
 - [x] sqlite3 ([libsqlite3-sys crate](https://github.com/jgallagher/rusqlite/tree/master/libsqlite3-sys) used by [diesel](https://github.com/diesel-rs/diesel))
 - [x] zlib (used by pq and openssl)
 
-We try to keep these up to date.
-
-If it weren't for pq, we could ditch zlib as the `flate2` crate bundles `miniz.c` as the default implementation, and this just works. Similarly, curl is only needed for people using the C bindings to curl over [hyper](https://hyper.rs/).
-
-If you need extra dependencies, you can follow the builder pattern approach by [portier-broker](https://github.com/portier/portier-broker/blob/master/Dockerfile)
+We **[try](https://github.com/clux/muslrust/blob/main/update_libs.py)** to keep these up to date.
 
 ## Developing
 
@@ -66,44 +69,22 @@ just build
 just test
 ```
 
-Before we push a new version of muslrust we ensure that we can use and statically link:
+## Tests
 
-- [x] `serde`
-- [x] `diesel` (postgres and sqlite - see note below for postgres)
-- [x] `hyper`
-- [x] `curl`
-- [x] `rustls`
-- [x] `openssl`
-- [x] `flate2`
-- [x] `rand`
+Before we push a new version of muslrust we [test](https://github.com/clux/muslrust/blob/main/test.sh#L4-L17) to ensure that we can use and statically link:
 
-## SSL Verification
+- [x] [serde](https://crates.io/crates/serde)
+- [x] [diesel](https://crates.io/crates/diesel)
+- [x] [hyper](https://crates.io/crates/hyper)
+- [x] [curl](https://crates.io/crates/curl)
+- [x] [rustls](https://crates.io/crates/rustls)
+- [x] [openssl](https://crates.io/crates/openssl)
+- [x] [flate2](https://crates.io/crates/flate2)
+- [x] [rand](https://crates.io/crates/rand)
 
-You need to point openssl at the location of your certificates explicitly to have https requests not return certificate errors.
+## Caching
 
-```sh
-export SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
-export SSL_CERT_DIR=/etc/ssl/certs
-```
-
-You can also hardcode this in your binary, or, more sensibly set it in your running docker image. The [openssl-probe crate](https://crates.io/crates/openssl-probe) can be also be used to detect where these reside.
-
-## Diesel and PQ builds
-
-Works with the older version of libpq we bundle (see [#81](https://github.com/clux/muslrust/issues/81)). See the [test/dieselpgcrate](./test/dieselpgcrate) for specifics.
-
-For stuff like `infer_schema!` to work you need to explicitly pass on `-e DATABASE_URL=$DATABASE_URL` to the `docker run`. It's probably easier to just make `diesel print-schema > src/schema.rs` part of your migration setup though.
-
-Note that diesel compiles with `openssl` statically since `1.34.0`, so you need to include the `openssl` crate **before** `diesel` due to [pq-sys#25](https://github.com/sgrif/pq-sys/issues/25):
-
-```rs
-extern crate openssl;
-#[macro_use] extern crate diesel;
-```
-
-This is true even if you connect without `sslmode=require`.
-
-## Caching Cargo Locally
+### Local Volume Caches
 
 Repeat builds locally are always from scratch (thus slow) without a cached cargo directory. You can set up a docker volume by just adding `-v cargo-cache:/root/.cargo/registry` to the docker run command.
 
@@ -128,19 +109,71 @@ $ musl-build
     Finished release [optimized] target(s) in 0.0 secs
 ```
 
-Second time around this will be quick, and you can even mix it with native `cargo build` calls without screwing with your cache.
+## Caching on CI
 
-## Debugging in blank containers
+On CI, you need to find a way to either store the `cargo-cache` referenced above, or rely on docker layer caches with layers (see [`cargo-chef`](https://github.com/LukeMathWalker/cargo-chef)).
+
+#### Github Actions
+Github actions supports both methods:
+
+- [GHA: direct folder cache (manual docker build)](https://github.com/kube-rs/controller-rs/blob/607d824d3a34959c5eded9c54f6f5c1bd14dc78e/.github/workflows/ci.yml#L67-L85)
+- [GHA: via docker layer caches (builder-pattern)](https://github.com/qualified/ephemeron/blob/fc52e2b0373c4ebfba552e8a0d402dee0bc08f9c/.github/workflows/images.yaml#L30-L48) (with `cargo-chef`)
+
+#### CircleCI
+CircleCI supports both methods:
+
+- [Circle: direct folder cache (manual docker build)](https://github.com/clux/webapp-rs/blob/master/.circleci/config.yml)
+- Circle also supports [docker layer caching](https://circleci.com/docs/2.0/docker-layer-caching/) (no example atm)
+
+## Troubleshooting
+
+### SSL Verification
+
+You might need to point `openssl` at the location of your certificates **explicitly** to avoid certificate errors on https requests.
+
+```sh
+export SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
+export SSL_CERT_DIR=/etc/ssl/certs
+```
+
+You can also hardcode this in your binary, or, more sensibly set it in your running docker image. The [openssl-probe crate](https://crates.io/crates/openssl-probe) can be also be used to detect where these reside. If you use [distroless:static](https://github.com/GoogleContainerTools/distroless/blob/main/base/README.md), you can avoid this.
+
+### Diesel and PQ builds
+
+Works with the older version of libpq we bundle (see [#81](https://github.com/clux/muslrust/issues/81)). See the [test/dieselpgcrate](./test/dieselpgcrate) for specifics.
+
+For stuff like `infer_schema!` to work you need to explicitly pass on `-e DATABASE_URL=$DATABASE_URL` to the `docker run`. It's probably easier to just make `diesel print-schema > src/schema.rs` part of your migration setup though.
+
+Note that diesel compiles with `openssl` statically since `1.34.0`, so you need to include the `openssl` crate **before** `diesel` due to [pq-sys#25](https://github.com/sgrif/pq-sys/issues/25):
+
+```rs
+extern crate openssl;
+#[macro_use] extern crate diesel;
+```
+
+This is true even if you connect without `sslmode=require`.
+
+### Filesystem permissions on local builds
+
+When building locally, the permissions of the musl parts of the `./target` artifacts dir will be owned by `root` and requires `sudo rm -rf target/` to clear. This is an [intended](https://github.com/clux/muslrust/issues/65) complexity tradeoff with user builds.
+
+### Debugging in blank containers
 
 If you are running a plain alpine/scratch container with your musl binary in there, then you might need to compile with debug symbols, and set `ENV RUST_BACKTRACE=full` in your `Dockerfile`.
 
-In alpine, if even this doesn't work (or fails to give you line numbers), try installing the `rust` package (via `apk`). This should not be necessary anymore though!
+In alpine, if this doesn't work (or fails to give you line numbers), try installing the `rust` package (via `apk`). This should not be necessary anymore though!
 
 For easily grabbing backtraces from rust docker apps; try adding [sentry](https://crates.io/crates/sentry). It seems to be able to grab backtraces regardless of compile options/evars.
 
-## Using muslrust on CI
+### SELinux
 
-Due to the current best compatibility with docker caching strategies, recommended CI is Circle. See [webapp-rs](https://github.com/clux/webapp-rs), [operator-rs](https://github.com/clux/operator-rs), or [raftcat](https://github.com/Babylonpartners/shipcat/tree/master/raftcat) for complete life-cycle rust cloud applications running in alpine containers built on CI (first two are demos, second one has more stuff).
+On SELinux enabled systems like Fedora, you will need to [configure selinux labels](https://docs.docker.com/storage/bind-mounts/#mounting-into-a-non-empty-directory-on-the-container). E.g. adding the `:Z` or `:z` flags where appropriate: `-v $PWD:/volume:Z`.
+
+## Extending
+
+### Extra C libraries
+
+If you need extra C libraries, you can follow the builder pattern approach via e.g. [rfcbot-rs's Dockerfile](https://github.com/rust-lang/rfcbot-rs/blob/2bd38f9fea0eab524f73eeb451b99dec76caef5d/Dockerfile) and add extra `curl` -> `make` instructions. We are unlikely to include other C libraries herein unless they are very popular.
 
 ### Extra Rustup components
 
@@ -158,6 +191,8 @@ If you need to install a binary crate such as [ripgrep](https://github.com/Burnt
 CARGO_BUILD_TARGET=x86_64-unknown-linux-gnu cargo install ripgrep
 ```
 
-## SELinux
+## Alternatives
 
-On SELinux enabled systems like Fedora, you will need to [configure selinux labels](https://docs.docker.com/storage/bind-mounts/#mounting-into-a-non-empty-directory-on-the-container). E.g. adding the `:Z` or `:z` flags where appropriate: `-v $PWD:/volume:Z`.
+- `rustup target add x86_64-unknown-linux-musl` works locally when not needing [C libraries](#c-libraries)
+- [official rust image](https://hub.docker.com/_/rust) can `target add` and easily cross-build when not needing [C libraries](#c-libraries)
+- [cross](https://github.com/japaric/cross) can cross-build different embedded targets
