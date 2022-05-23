@@ -1,13 +1,12 @@
 # See https://just.systems/man/
 
-RUST_CHANNEL := "stable"
-
 default:
   @just --list --unsorted --color=always | rg -v "    default"
 
 # Build container locally
 build:
-	docker build --build-arg CHANNEL="{{RUST_CHANNEL}}" -t clux/muslrust:temp .
+	docker build --build-arg CHANNEL="stable" -f Dockerfile.stable -t clux/muslrust:temp .
+
 # Shell into the built container
 run:
 	docker run -v $PWD/test:/volume  -w /volume -it clux/muslrust:temp /bin/bash
