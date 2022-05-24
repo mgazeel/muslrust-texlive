@@ -3,9 +3,12 @@
 default:
   @just --list --unsorted --color=always | rg -v "    default"
 
-# Build container locally
-build:
-	docker build --build-arg CHANNEL="stable" -f Dockerfile.stable -t clux/muslrust:temp .
+_build channel:
+	docker build --build-arg CHANNEL="{channel}" -t clux/muslrust:temp .
+# Build the stable container locally tagged as :temp
+build-stable: (_build "stable")
+# Build the nightly container locally tagged as :temp
+build-nightly: (_build "nightly")
 
 # Shell into the built container
 run:
@@ -24,6 +27,7 @@ clean: clean-docker clean-tests
 # Cleanup docker images with clux/muslrus_t name
 clean-docker:
   docker images clux/muslrust -q | xargs -r docker rmi -f
+
 # Cleanup test artifacts
 clean-tests:
   sudo find . -iname Cargo.lock -exec rm {} \;
