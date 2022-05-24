@@ -11,8 +11,7 @@ LABEL maintainer="Eirik Albrigtsen <sszynrae@gmail.com>"
 # - linux-headers-amd64 - needed for building openssl 1.1 (stretch only)
 # - file - needed by rustup.sh install
 # - automake autoconf libtool - support crates building C deps as part cargo build
-# recently removed:
-# cmake (not used), nano, zlib1g-dev
+# NB: does not include cmake atm
 RUN apt-get update && apt-get install -y \
   musl-dev \
   musl-tools \
