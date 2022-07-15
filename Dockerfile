@@ -38,14 +38,12 @@ ENV RUSTUP_VER="1.24.3" \
     RUST_ARCH="x86_64-unknown-linux-gnu"
 RUN curl "https://static.rust-lang.org/rustup/archive/${RUSTUP_VER}/${RUST_ARCH}/rustup-init" -o rustup-init && \
     chmod +x rustup-init && \
-    ./rustup-init -y --default-toolchain ${CHANNEL} --profile minimal && \
+    ./rustup-init -y --default-toolchain ${CHANNEL} --profile minimal --no-modify-path && \
     rm rustup-init && \
-    ~/.cargo/bin/rustup target add x86_64-unknown-linux-musl && \
-    echo "[build]\ntarget = \"x86_64-unknown-linux-musl\"" > ~/.cargo/config
+    ~/.cargo/bin/rustup target add x86_64-unknown-linux-musl
 
 # Allow non-root access to cargo
 RUN chmod a+X /root
-COPY etc/profile.d/cargo.sh /etc/profile.d/cargo.sh
 
 # Convenience list of versions and variables for compilation later on
 # This helps continuing manually if anything breaks.
@@ -125,7 +123,9 @@ RUN curl -sSL https://www.sqlite.org/2022/sqlite-autoconf-$SQLITE_VER.tar.gz | t
 # but finally links with the static libpq.a at the end.
 # It needs the non-musl pg_config to set this up with libpq-dev (depending on libssl-dev)
 # See https://github.com/sgrif/pq-sys/pull/18
-ENV PATH=$PREFIX/bin:$PATH \
+ENV PATH=/root/.cargo/bin:$PREFIX/bin:$PATH \
+    RUSTUP_HOME=/root/.rustup \
+	CARGO_BUILD_TARGET=x86_64-unknown-linux-musl \
     PKG_CONFIG_ALLOW_CROSS=true \
     PKG_CONFIG_ALL_STATIC=true \
     PQ_LIB_STATIC_X86_64_UNKNOWN_LINUX_MUSL=true \
