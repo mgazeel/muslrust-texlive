@@ -34,6 +34,10 @@ jobs:
           echo '::set-output name=BUILD::YES'
         else
           echo "Stable tag found; skipping all build steps"
+          # Setting dummy tag evars to prevent steps below from failing
+          echo "TAG1=clux/muslrust:no1" >> $GITHUB_ENV
+          echo "TAG2=clux/muslrust:no2" >> $GITHUB_ENV
+          echo "TAG3=clux/muslrust:no3" >> $GITHUB_ENV
         fi
 
     - name: Build stable image
