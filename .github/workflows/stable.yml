@@ -25,16 +25,15 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Check if we need a new stable
-      id: stable-check
+      id: stablecheck
       shell: bash
       run: |
         pip3 install --user toml
         if python3 check_stable.py; then
           echo "Stable tag missing; running all build steps"
-          echo '::set-output name=BUILD::1'
+          echo '::set-output name=BUILD::YES'
         else
           echo "Stable tag found; skipping all build steps"
-          echo '::set-output name=BUILD::0'
         fi
 
     - name: Build stable image
@@ -45,7 +44,7 @@ jobs:
         build-args: |
           CHANNEL=stable
         tags: clux/muslrust:temp
-      if: ${{ steps.stable-check.outputs.BUILD }} == 1
+      if: ${{ steps.stablecheck.outputs.BUILD }}
 
     - name: Compute tags
       shell: bash
@@ -57,7 +56,7 @@ jobs:
         echo "TAG1=clux/muslrust:${RUST_CHANNEL}" >> $GITHUB_ENV
         echo "TAG2=clux/muslrust:${RUST_VER}-${RUST_CHANNEL}" >> $GITHUB_ENV
         echo "TAG3=clux/muslrust:${RUST_VER}" >> $GITHUB_ENV
-      if: ${{ steps.stable-check.outputs.BUILD }} == '1'
+      if: ${{ steps.stablecheck.outputs.BUILD }}
 
     - name: Echo tags
       shell: bash
@@ -68,12 +67,12 @@ jobs:
 
     - name: Run tests
       shell: bash
-      if: ${{ steps.stable-check.outputs.BUILD }} == '1'
+      if: ${{ steps.stablecheck.outputs.BUILD }}
       run: just test
 
     - name: Push image under computed tags
       uses: docker/build-push-action@v2
-      if: ${{ steps.stable-check.outputs.BUILD }} == '1' && github.event_name != 'pull_request'
+      if: ${{ steps.stablecheck.outputs.BUILD }} && github.event_name != 'pull_request'
       with:
         context: .
         build-args: |
