@@ -30,7 +30,11 @@ jobs:
       run: |
         pip3 install --user toml
         if python3 check_stable.py; then
+          echo "Stable tag missing; running all build steps"
           echo '::set-output name=BUILD::1'
+        else
+          echo "Stable tag found; skipping all build steps"
+          echo '::set-output name=BUILD::0'
         fi
 
     - name: Build stable image
@@ -41,7 +45,7 @@ jobs:
         build-args: |
           CHANNEL=stable
         tags: clux/muslrust:temp
-      if: ${{ steps.stable-check.outputs.BUILD }} == '1'
+      if: ${{ steps.stable-check.outputs.BUILD }} == 1
 
     - name: Compute tags
       shell: bash
