@@ -23,25 +23,24 @@ def rust_stable_version():
     req.close()
     return data['pkg']['rust']['version'].split()[0]
 
-def stable_tag_exists(stable_ver):
+def tag_exists(tag):
     """Retrieve our built tags and check we have built a given one"""
     url = f'https://registry.hub.docker.com/v1/repositories/{DOCKERHUB_REPO}/tags'
     req = urllib.urlopen(url)
     data = json.loads(req.read())
     req.close()
     for x in data:
-        if x['name'] == stable_ver:
+        if x['name'] == tag:
             return True
     return False
 
 
 if __name__ == '__main__':
     latest_stable = rust_stable_version()
-    tag = f'{latest_stable}-stable'
-    print(tag)
-    exists = stable_tag_exists(tag)
-    if not exists:
-        print(latest_stable)
-        sys.exit(0)
-    else:
+    stable_tag = f'{latest_stable}-stable'
+    if tag_exists(stable_tag):
+        print(f'tag {stable_tag} already built')
         sys.exit(1)
+    else:
+        print(f'need to build {latest_stable}')
+        sys.exit(0)
