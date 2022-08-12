@@ -79,5 +79,5 @@ jobs:
       if: ${{ steps.stablecheck.outputs.BUILD }}
       with:
         context: .
-        push: ${{ steps.stablecheck.outputs.BUILD }} == 'YES' && github.event_name != 'pull_request'
+        push: ${{ steps.stablecheck.outputs.BUILD == 'YES' && github.event_name != 'pull_request' }}
         tags: ${{ env.TAG1 }},${{ env.TAG2 }},${{ env.TAG3 }}
