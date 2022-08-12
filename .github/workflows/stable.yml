@@ -17,13 +17,6 @@ jobs:
     - uses: 'actions/checkout@v2'
     - uses: extractions/setup-just@v1
 
-    - name: Login to DockerHub
-      if: github.event_name != 'pull_request'
-      uses: docker/login-action@v1
-      with:
-        username: clux
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
-
     - name: Check if we need a new stable
       id: stablecheck
       shell: bash
@@ -44,7 +37,7 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         context: .
-        push: false
+        load: true
         build-args: |
           CHANNEL=stable
         tags: clux/muslrust:temp
@@ -73,6 +66,13 @@ jobs:
       shell: bash
       if: ${{ steps.stablecheck.outputs.BUILD }}
       run: just test
+
+    - name: Login to DockerHub
+      if: github.event_name != 'pull_request'
+      uses: docker/login-action@v1
+      with:
+        username: clux
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Push image under computed tags
       uses: docker/build-push-action@v3
