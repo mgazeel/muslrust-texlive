@@ -79,5 +79,7 @@ jobs:
       if: ${{ steps.stablecheck.outputs.BUILD }}
       with:
         context: .
+        build-args: |
+          CHANNEL=stable
         push: ${{ steps.stablecheck.outputs.BUILD == 'YES' && github.event_name != 'pull_request' }}
         tags: ${{ env.TAG1 }},${{ env.TAG2 }},${{ env.TAG3 }}
