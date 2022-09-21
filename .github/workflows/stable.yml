@@ -32,6 +32,7 @@ jobs:
           echo "TAG2=clux/muslrust:no2" >> $GITHUB_ENV
           echo "TAG3=clux/muslrust:no3" >> $GITHUB_ENV
         fi
+        echo '::set-output name=BUILD::YES'
 
     - name: Build stable image
       uses: docker/build-push-action@v3
