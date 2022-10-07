@@ -25,11 +25,12 @@ def rust_stable_version():
 
 def tag_exists(tag):
     """Retrieve our built tags and check we have built a given one"""
-    url = f'https://registry.hub.docker.com/v1/repositories/{DOCKERHUB_REPO}/tags'
+    (namespace, repo) = DOCKERHUB_REPO.split("/")
+    url = f'https://registry.hub.docker.com/v2/namespaces/{namespace}/repositories/{repo}/tags'
     req = urllib.urlopen(url)
     data = json.loads(req.read())
     req.close()
-    for x in data:
+    for x in data['results']:
         if x['name'] == tag:
             return True
     return False
