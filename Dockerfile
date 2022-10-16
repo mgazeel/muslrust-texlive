@@ -49,10 +49,10 @@ RUN chmod a+X /root
 # Convenience list of versions and variables for compilation later on
 # This helps continuing manually if anything breaks.
 ENV SSL_VER="1.1.1q" \
-    CURL_VER="7.84.0" \
-    ZLIB_VER="1.2.12" \
+    CURL_VER="7.85.0" \
+    ZLIB_VER="1.2.13" \
     PQ_VER="11.12" \
-    SQLITE_VER="3390200" \
+    SQLITE_VER="3390400" \
     CC=musl-gcc \
     PREFIX=/musl \
     PATH=/usr/local/bin:/root/.cargo/bin:$PATH \
