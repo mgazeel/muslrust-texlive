@@ -31,6 +31,7 @@ RUN apt-get update && apt-get install -y \
   autoconf \
   libtool \
   protobuf-compiler \
+  libprotobuf-dev \
   --no-install-recommends && \
   rm -rf /var/lib/apt/lists/*
 
