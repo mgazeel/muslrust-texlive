@@ -52,7 +52,7 @@ RUN chmod a+X /root
 
 # Convenience list of versions and variables for compilation later on
 # This helps continuing manually if anything breaks.
-ENV SSL_VER="3.1.2" \
+ENV SSL_VER="1.1.1q" \
     CURL_VER="8.2.1" \
     ZLIB_VER="1.3" \
     PQ_VER="11.12" \
