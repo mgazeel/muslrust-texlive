@@ -54,7 +54,7 @@ RUN chmod a+X /root
 # This helps continuing manually if anything breaks.
 ENV SSL_VER="1.1.1q" \
     CURL_VER="8.4.0" \
-    ZLIB_VER="1.3" \
+    ZLIB_VER="1.3.1" \
     PQ_VER="11.12" \
     SQLITE_VER="3430100" \
     CC=musl-gcc \
