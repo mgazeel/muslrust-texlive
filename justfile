@@ -1,7 +1,8 @@
 # See https://just.systems/man/
 
+[private]
 default:
-  @just --list --unsorted --color=always | rg -v "    default"
+  @just --list --unsorted --color=always
 
 _build channel:
 	docker build --build-arg CHANNEL="{{channel}}" -t clux/muslrust:temp .
@@ -33,7 +34,3 @@ clean-tests:
   sudo find . -iname Cargo.lock -exec rm {} \;
   sudo find . -mindepth 3 -maxdepth 3 -name target -exec rm -rf {} \;
   sudo rm -f test/dieselsqlitecrate/main.db
-
-# mode: makefile
-# End:
-# vim: set ft=make :
