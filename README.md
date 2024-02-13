@@ -6,7 +6,7 @@
 
 A docker environment for building **static** rust binaries for `x86_64` **linux** environments using **[musl](https://musl.libc.org/)**. Built daily via [github actions](https://github.com/clux/muslrust/actions).
 
-Binaries compiled with `muslrust` are **light-weight**, call straight into the kernel without other system library dependencies, can be shipped to most linux distributions without compatibility issues, and can be inserted into lightweight docker images such as [static distroless](https://github.com/GoogleContainerTools/distroless/blob/main/base/README.md), [scratch](https://hub.docker.com/_/scratch), or [alpine](https://hub.docker.com/_/alpine) without further installs.
+Binaries compiled with `muslrust` are **light-weight**, call straight into the kernel without other dynamic system library dependencies, can be shipped to most linux distributions without compatibility issues, and can be inserted as-is into lightweight docker images such as [static distroless](https://github.com/GoogleContainerTools/distroless/blob/main/base/README.md), [scratch](https://hub.docker.com/_/scratch), or [alpine](https://hub.docker.com/_/alpine).
 
 The goal is to **simplify** the creation of small and **efficient cloud containers**, or **stand-alone linux binary releases**.
 
@@ -28,8 +28,6 @@ ldd target/x86_64-unknown-linux-musl/release/EXECUTABLE
         not a dynamic executable
 ```
 
-
-
 ## Examples
 
 - [Kubernetes controller with actix-web using plain distroless/static](https://github.com/kube-rs/controller-rs/blob/main/Dockerfile)
@@ -37,9 +35,9 @@ ldd target/x86_64-unknown-linux-musl/release/EXECUTABLE
 - [Kubernetes controller using cargo-chef for caching layers](https://github.com/qualified/ephemeron/blob/main/k8s/controller/Dockerfile)
 - [Github release assets uploaded via github actions](https://github.com/kube-rs/kopium/blob/main/.github/workflows/release.yml)
 
-The binaries and images for small apps generally end up around ~6MB compressed or ~20MB uncompressed without stripping.
+The binaries and images for small apps generally end up `<10MB` compressed or `~20MB` uncompressed without stripping.
 
-The **recommended** production image is **[static distroless](https://github.com/GoogleContainerTools/distroless/blob/main/base/README.md)** because it avoids you dealing with below SSL issues (common with `scratch`), and it disallows shelling in via `kubectl exec` (use `alpine` if you want this).
+The **recommended** production image is [distroless static](https://github.com/GoogleContainerTools/distroless/tree/main/base) or [chainguard static](https://github.com/chainguard-images/images/tree/main/images/static) as these contain a non-root users + SSL certs (unlike `scratch`), and disallows shell access (use `kubectl debug` if you want this). See also [kube.rs security doc on base image recommendations](https://kube.rs/controllers/security/#base-images).
 
 ## Available Tags
 
@@ -136,7 +134,7 @@ export SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt
 export SSL_CERT_DIR=/etc/ssl/certs
 ```
 
-You can also hardcode this in your binary, or, more sensibly set it in your running docker image. The [openssl-probe crate](https://crates.io/crates/openssl-probe) can be also be used to detect where these reside. If you use [distroless:static](https://github.com/GoogleContainerTools/distroless/blob/main/base/README.md), you can avoid this.
+These can be [hardcoded in your Dockerfile](https://docs.docker.com/engine/reference/builder/#env), or you can rely on the [openssl-probe crate](https://crates.io/crates/openssl-probe) to detect the cert location. You should not have to do this if you are using the static variants of `distroless` or `chainguard`.
 
 ### Diesel and PQ builds
 
@@ -159,7 +157,7 @@ When building locally, the permissions of the musl parts of the `./target` artif
 
 ### Debugging in blank containers
 
-If you are running a plain alpine/scratch container with your musl binary in there, then you might need to compile with debug symbols, and set `ENV RUST_BACKTRACE=full` in your `Dockerfile`.
+If you are running a plain alpine/scratch container with your musl binary in there, then you might need to compile with debug symbols, and set the `RUST_BACKTRACE=full` evar to see crashes.
 
 In alpine, if this doesn't work (or fails to give you line numbers), try installing the `rust` package (via `apk`). This should not be necessary anymore though!
 
