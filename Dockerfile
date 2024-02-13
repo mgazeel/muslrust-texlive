@@ -35,14 +35,6 @@ RUN apt-get update && apt-get install -y \
   --no-install-recommends && \
   rm -rf /var/lib/apt/lists/*
 
-# Install a more recent release of protoc (protobuf-compiler in jammy is 4 years old and misses some features)
-ENV PROTOC_VER="25.2"
-RUN cd /tmp && \
-    curl -sSL https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VER}/protoc-${PROTOC_VER}-linux-x86_64.zip -o protoc.zip && \
-    unzip protoc.zip && \
-    cp bin/protoc /usr/bin/protoc && \
-    rm -rf *
-
 # Install rust using rustup
 ARG CHANNEL
 ENV RUSTUP_VER="1.26.0" \
@@ -60,16 +52,24 @@ RUN chmod a+X /root
 
 # Convenience list of versions and variables for compilation later on
 # This helps continuing manually if anything breaks.
-ENV SSL_VER="1.1.1q" \
+ENV SSL_VER="1.1.1w" \
     CURL_VER="8.4.0" \
     ZLIB_VER="1.3.1" \
     PQ_VER="11.12" \
-    SQLITE_VER="3430100" \
+    SQLITE_VER="3450100" \
+    PROTOBUF_VER="25.2" \
     CC=musl-gcc \
     PREFIX=/musl \
     PATH=/usr/local/bin:/root/.cargo/bin:$PATH \
     PKG_CONFIG_PATH=/usr/local/lib/pkgconfig \
     LD_LIBRARY_PATH=$PREFIX
+
+# Install a more recent release of protoc (protobuf-compiler in jammy is 4 years old and misses some features)
+RUN cd /tmp && \
+    curl -sSL https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOBUF_VER}/protoc-${PROTOBUF_VER}-linux-x86_64.zip -o protoc.zip && \
+    unzip protoc.zip && \
+    cp bin/protoc /usr/bin/protoc && \
+    rm -rf *
 
 # Set up a prefix for musl build libraries, make the linker's job of finding them easier
 # Primarily for the benefit of postgres.
@@ -120,7 +120,7 @@ RUN curl -sSL https://ftp.postgresql.org/pub/source/v$PQ_VER/postgresql-$PQ_VER.
     cd .. && rm -rf postgresql-$PQ_VER
 
 # Build libsqlite3 using same configuration as the alpine linux main/sqlite package
-RUN curl -sSL https://www.sqlite.org/2023/sqlite-autoconf-$SQLITE_VER.tar.gz | tar xz && \
+RUN curl -sSL https://www.sqlite.org/2024/sqlite-autoconf-$SQLITE_VER.tar.gz | tar xz && \
     cd sqlite-autoconf-$SQLITE_VER && \
     CFLAGS="-DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_FTS3_PARENTHESIS -DSQLITE_ENABLE_FTS5 -DSQLITE_ENABLE_COLUMN_METADATA -DSQLITE_SECURE_DELETE -DSQLITE_ENABLE_UNLOCK_NOTIFY -DSQLITE_ENABLE_RTREE -DSQLITE_USE_URI -DSQLITE_ENABLE_DBSTAT_VTAB -DSQLITE_ENABLE_JSON1" \
     CC="musl-gcc -fPIC -pie" \
