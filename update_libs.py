@@ -85,7 +85,7 @@ if __name__ == '__main__':
         'CURL': pkgver('curl'),
         #'PQ': pkgver('postgresql-old-upgrade'), # see https://github.com/clux/muslrust/issues/81
         'SQLITE': convert_sqlite_version(pkgver('sqlite')),
-        'SSL': convert_openssl_version(pkgver('openssl')),
+        'SSL': convert_openssl_version(pkgver('openssl-1.1')),
         'PROTOBUF': pkgver('protobuf'),
         'ZLIB': pkgver('zlib'),
         'RUSTUP': rustup_version()

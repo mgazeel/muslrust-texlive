@@ -52,12 +52,12 @@ RUN chmod a+X /root
 
 # Convenience list of versions and variables for compilation later on
 # This helps continuing manually if anything breaks.
-ENV SSL_VER="1.1.1q" \
-    CURL_VER="8.4.0" \
+ENV SSL_VER="1.1.1w" \
+    CURL_VER="8.6.0" \
     ZLIB_VER="1.3.1" \
     PQ_VER="11.12" \
-    SQLITE_VER="3430100" \
-    PROTOC_VER="25.2" \
+    SQLITE_VER="3450100" \
+    PROTOBUF_VER="25.2" \
     CC=musl-gcc \
     PREFIX=/musl \
     PATH=/usr/local/bin:/root/.cargo/bin:$PATH \
@@ -66,7 +66,7 @@ ENV SSL_VER="1.1.1q" \
 
 # Install a more recent release of protoc (protobuf-compiler in jammy is 4 years old and misses some features)
 RUN cd /tmp && \
-    curl -sSL https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VER}/protoc-${PROTOC_VER}-linux-x86_64.zip -o protoc.zip && \
+    curl -sSL https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOBUF_VER}/protoc-${PROTOBUF_VER}-linux-x86_64.zip -o protoc.zip && \
     unzip protoc.zip && \
     cp bin/protoc /usr/bin/protoc && \
     rm -rf *
