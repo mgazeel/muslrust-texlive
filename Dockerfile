@@ -30,10 +30,17 @@ RUN apt-get update && apt-get install -y \
   automake \
   autoconf \
   libtool \
-  protobuf-compiler \
   libprotobuf-dev \
+  unzip \
   --no-install-recommends && \
   rm -rf /var/lib/apt/lists/*
+
+# Install a more recent release of protoc (protobuf-compiler in jammy is 4 years old and misses some features)
+RUN cd /tmp && \
+    curl -sSL https://github.com/protocolbuffers/protobuf/releases/download/v25.2/protoc-25.2-linux-x86_64.zip -o protoc.zip && \
+    unzip protoc.zip && \
+    cp bin/protoc /usr/bin/protoc && \
+    rm -rf *
 
 # Install rust using rustup
 ARG CHANNEL
