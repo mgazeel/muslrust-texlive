@@ -36,6 +36,7 @@ RUN apt-get update && apt-get install -y \
   rm -rf /var/lib/apt/lists/*
 
 # Install a more recent release of protoc (protobuf-compiler in jammy is 4 years old and misses some features)
+ENV PROTOC_VER="25.2"
 RUN cd /tmp && \
     curl -sSL https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VER}/protoc-${PROTOC_VER}-linux-x86_64.zip -o protoc.zip && \
     unzip protoc.zip && \
