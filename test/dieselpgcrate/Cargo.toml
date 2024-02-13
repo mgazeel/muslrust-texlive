@@ -4,5 +4,5 @@ name = "dieselpgcrate"
 version = "0.1.0"
 
 [dependencies]
-diesel = { version = "1.4.*", features = ["postgres"] }
+diesel = { version = "2.1.*", features = ["postgres"] }
 openssl = "*"
