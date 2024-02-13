@@ -53,7 +53,7 @@ RUN chmod a+X /root
 # Convenience list of versions and variables for compilation later on
 # This helps continuing manually if anything breaks.
 ENV SSL_VER="1.1.1w" \
-    CURL_VER="8.4.0" \
+    CURL_VER="8.6.0" \
     ZLIB_VER="1.3.1" \
     PQ_VER="11.12" \
     SQLITE_VER="3450100" \
@@ -104,7 +104,7 @@ RUN curl -sSL https://curl.se/download/curl-$CURL_VER.tar.gz | tar xz && \
     CC="musl-gcc -fPIC -pie" LDFLAGS="-L$PREFIX/lib" CFLAGS="-I$PREFIX/include" ./configure \
       --enable-shared=no --with-zlib --enable-static=ssl --enable-optimize --prefix=$PREFIX \
       --with-ca-path=/etc/ssl/certs/ --with-ca-bundle=/etc/ssl/certs/ca-certificates.crt --without-ca-fallback \
-      --with-openssl && \
+      --with-openssl --without-libpsl && \
     make -j$(nproc) curl_LDFLAGS="-all-static" && make install && \
     cd .. && rm -rf curl-$CURL_VER
 
