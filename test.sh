@@ -12,7 +12,7 @@ docker_build() {
     -v cargo-cache:/root/.cargo/registry \
     -e RUST_BACKTRACE=1 \
     -e AR=ar \
-    --platform $PLATFORM \
+    --platform "${PLATFORM}" \
     rustmusl-temp \
     cargo build
 
@@ -24,7 +24,7 @@ docker_build() {
   docker run --rm \
     -v "$PWD:/volume" \
     -e RUST_BACKTRACE=1 \
-    --platform $PLATFORM \
+    --platform "${PLATFORM}" \
     test-runner \
     bash -c "cd volume; ./target/$TARGET_DIR/debug/${crate} && file ./target/$TARGET_DIR/debug/${crate} && file /volume/target/$TARGET_DIR/debug/${crate} 2>&1 | grep -qE 'static-pie linked|statically linked' && echo ${crate} is a static executable"
 }
