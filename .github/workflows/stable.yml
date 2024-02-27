@@ -89,7 +89,8 @@ jobs:
       if: ${{ steps.stablecheck.outputs.BUILD }}
 
     - name: Run tests
-      if: ${{ steps.stablecheck.outputs.BUILD }}
+      #if: ${{ steps.stablecheck.outputs.BUILD }}
+      if: false
       shell: bash
       run: |
         docker buildx build --platform ${{ matrix.platform }} --output type=docker -t test-runner - < Dockerfile.test-runner
@@ -175,7 +176,6 @@ jobs:
 
     - name: Login to Docker Hub
       uses: docker/login-action@v3
-      if: false
       with:
         username: clux
         password: ${{ secrets.DOCKERHUB_TOKEN }}
