@@ -47,14 +47,13 @@ jobs:
       id: stablecheck
       shell: bash
       run: |
-        echo '::set-output name=BUILD::YES'
-        #pip3 install --user toml
-        #if python3 check_stable.py; then
-        #  echo "Stable tag missing; running all build steps"
-        #  echo '::set-output name=BUILD::YES'
-        #else
-        #  echo "Stable tag found; skipping all build steps"
-        #fi
+        pip3 install --user toml
+        if python3 check_stable.py; then
+          echo "Stable tag missing; running all build steps"
+          echo '::set-output name=BUILD::YES'
+        else
+          echo "Stable tag found; skipping all build steps"
+        fi
 
     - name: Prepare
       run: |
@@ -89,8 +88,7 @@ jobs:
       if: ${{ steps.stablecheck.outputs.BUILD }}
 
     - name: Run tests
-      #if: ${{ steps.stablecheck.outputs.BUILD }}
-      if: false
+      if: ${{ steps.stablecheck.outputs.BUILD }}
       shell: bash
       run: |
         docker buildx build --platform ${{ matrix.platform }} --output type=docker -t test-runner - < Dockerfile.test-runner
@@ -149,14 +147,13 @@ jobs:
       id: stablecheck
       shell: bash
       run: |
-        echo '::set-output name=BUILD::YES'
-        #pip3 install --user toml
-        #if python3 check_stable.py; then
-        #  echo "Stable tag missing; running all build steps"
-        #  echo '::set-output name=BUILD::YES'
-        #else
-        #  echo "Stable tag found; skipping all build steps"
-        #fi
+        pip3 install --user toml
+        if python3 check_stable.py; then
+          echo "Stable tag missing; running all build steps"
+          echo '::set-output name=BUILD::YES'
+        else
+          echo "Stable tag found; skipping all build steps"
+        fi
 
     - name: Download tags
       if: ${{ steps.stablecheck.outputs.BUILD }}
