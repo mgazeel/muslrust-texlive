@@ -4,7 +4,7 @@
 [![stable](https://github.com/clux/muslrust/actions/workflows/stable.yml/badge.svg)](https://github.com/clux/muslrust/actions/workflows/stable.yml)
 [![docker pulls](https://img.shields.io/docker/pulls/clux/muslrust.svg)](https://hub.docker.com/r/clux/muslrust/tags)
 
-A docker environment for building **static** rust binaries for `x86_64` **linux** environments using **[musl](https://musl.libc.org/)**. Built daily via [github actions](https://github.com/clux/muslrust/actions).
+A docker environment for building **static** rust binaries for `x86_64` and `arm64` **linux** environments using **[musl](https://musl.libc.org/)**. Built daily via [github actions](https://github.com/clux/muslrust/actions).
 
 Binaries compiled with `muslrust` are **light-weight**, call straight into the kernel without other dynamic system library dependencies, can be shipped to most linux distributions without compatibility issues, and can be inserted as-is into lightweight docker images such as [static distroless](https://github.com/GoogleContainerTools/distroless/blob/main/base/README.md), [scratch](https://hub.docker.com/_/scratch), or [alpine](https://hub.docker.com/_/alpine).
 

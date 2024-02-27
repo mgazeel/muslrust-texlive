@@ -34,7 +34,7 @@ jobs:
             arch: arm64
             target_dir: aarch64-unknown-linux-musl
     steps:
-    - uses: 'actions/checkout@v2'
+    - uses: actions/checkout@v2
     - uses: extractions/setup-just@v1
 
     - name: Login to DockerHub
@@ -80,7 +80,7 @@ jobs:
         context: .
         platforms: ${{ matrix.platform }}
         labels: ${{ steps.meta.outputs.labels }}
-        file:  ${{ matrix.dockerfile }}
+        file: ${{ matrix.dockerfile }}
         push: false
         load: true
         tags: rustmusl-temp
@@ -143,18 +143,19 @@ jobs:
     needs:
       - build
     steps:
-    - uses: 'actions/checkout@v2'
+    - uses: actions/checkout@v2
     - name: Check if we need a new stable
       id: stablecheck
       shell: bash
       run: |
-        pip3 install --user toml
-        if python3 check_stable.py; then
-          echo "Stable tag missing; running all build steps"
-          echo '::set-output name=BUILD::YES'
-        else
-          echo "Stable tag found; skipping all build steps"
-        fi
+        echo '::set-output name=BUILD::YES'
+        #pip3 install --user toml
+        #if python3 check_stable.py; then
+        #  echo "Stable tag missing; running all build steps"
+        #  echo '::set-output name=BUILD::YES'
+        #else
+        #  echo "Stable tag found; skipping all build steps"
+        #fi
 
     - name: Download tags
       if: ${{ steps.stablecheck.outputs.BUILD }}
