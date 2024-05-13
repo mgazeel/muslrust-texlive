@@ -171,7 +171,7 @@ On SELinux enabled systems like Fedora, you will need to [configure selinux labe
 
 ### Extra C libraries
 
-If you need extra C libraries, you can follow the builder pattern approach via e.g. [rfcbot-rs's Dockerfile](https://github.com/rust-lang/rfcbot-rs/blob/2bd38f9fea0eab524f73eeb451b99dec76caef5d/Dockerfile) and add extra `curl` -> `make` instructions. We are unlikely to include other C libraries herein unless they are very popular.
+If you need extra C libraries, you can inherit from this image `FROM clux/muslrust:stable as builder` and add extra `curl` -> `make` instructions. We are unlikely to include other C libraries herein unless they are very popular.
 
 ### Extra Rustup components
 
