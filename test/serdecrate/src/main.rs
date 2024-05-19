@@ -1,8 +1,9 @@
-#[macro_use]
-extern crate serde_derive;
+use serde_derive::{Deserialize, Serialize};
+use serde_json;
 
-extern crate serde;
-extern crate serde_json;
+use tikv_jemallocator::Jemalloc;
+#[global_allocator]
+static GLOBAL: Jemalloc = Jemalloc;
 
 #[derive(Serialize, Deserialize, Debug)]
 struct Point {

@@ -123,6 +123,19 @@ CircleCI supports both methods:
 - [Circle: direct folder cache (manual docker build)](https://github.com/clux/webapp-rs/blob/master/.circleci/config.yml)
 - Circle also supports [docker layer caching](https://circleci.com/docs/2.0/docker-layer-caching/) (no example atm)
 
+## Allocator Performance
+
+To optimise memory performance (see [#142](https://github.com/clux/muslrust/issues/142)) consider changing the global allocators in sensitive applications:
+
+- [jemalloc](https://github.com/tikv/jemallocator)
+- [mimalloc](https://github.com/microsoft/mimalloc)
+
+```rust
+use tikv_jemallocator::Jemalloc;
+#[global_allocator]
+static GLOBAL: Jemalloc = Jemalloc;
+```
+
 ## Troubleshooting
 
 ### SSL Verification
