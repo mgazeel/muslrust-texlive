@@ -59,7 +59,7 @@ ENV SSL_VER="1.1.1w" \
     PQ_VER="11.12" \
     SQLITE_VER="3450100" \
     PROTOBUF_VER="25.2" \
-    SCCACHE_VERSION="0.3.0" \
+    SCCACHE_VERSION="0.8.0" \
     CC=musl-gcc \
     PREFIX=/musl \
     PATH=/usr/local/bin:/root/.cargo/bin:$PATH \
@@ -160,9 +160,6 @@ ENV PATH=/root/.cargo/bin:$PREFIX/bin:$PATH \
     LIBZ_SYS_STATIC=1 \
     DEBIAN_FRONTEND=noninteractive \
     TZ=Etc/UTC
-
-# Install sccache
-RUN cargo install sccache
 
 # Allow ditching the -w /volume flag to docker run
 WORKDIR /volume
