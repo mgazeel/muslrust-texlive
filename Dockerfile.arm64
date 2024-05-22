@@ -59,7 +59,7 @@ ENV SSL_VER="1.1.1w" \
     PQ_VER="11.12" \
     SQLITE_VER="3450100" \
     PROTOBUF_VER="25.2" \
-    SCCACHE_VERSION="0.8.0" \
+    SCCACHE_VER="0.8.0" \
     CC=musl-gcc \
     PREFIX=/musl \
     PATH=/usr/local/bin:/root/.cargo/bin:$PATH \
@@ -74,10 +74,10 @@ RUN cd /tmp && \
     rm -rf *
 
 # Install prebuilt sccache based on platform
-RUN curl -sSL https://github.com/mozilla/sccache/releases/download/v${SCCACHE_VERSION}/sccache-v${SCCACHE_VERSION}-aarch64-unknown-linux-musl.tar.gz | tar xz && \
-    mv sccache-v${SCCACHE_VERSION}-*-unknown-linux-musl/sccache /usr/local/bin/ && \
+RUN curl -sSL https://github.com/mozilla/sccache/releases/download/v${SCCACHE_VER}/sccache-v${SCCACHE_VER}-aarch64-unknown-linux-musl.tar.gz | tar xz && \
+    mv sccache-v${SCCACHE_VER}-*-unknown-linux-musl/sccache /usr/local/bin/ && \
     chmod +x /usr/local/bin/sccache && \
-    rm -rf sccache-v${SCCACHE_VERSION}-*-unknown-linux-musl
+    rm -rf sccache-v${SCCACHE_VER}-*-unknown-linux-musl
 
 # Set up a prefix for musl build libraries, make the linker's job of finding them easier
 # Primarily for the benefit of postgres.
