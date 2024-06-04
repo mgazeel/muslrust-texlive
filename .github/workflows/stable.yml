@@ -1,7 +1,5 @@
 name: stable
 on:
-  schedule:
-    - cron: '0 12 * * *' # everyday at noon
   push:
     branches:
       - 'main'
