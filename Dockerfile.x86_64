@@ -116,15 +116,15 @@ RUN curl -sSL https://curl.se/download/curl-$CURL_VER.tar.gz | tar xz && \
     cd .. && rm -rf curl-$CURL_VER
 
 # Build libpq
-RUN curl -sSL https://ftp.postgresql.org/pub/source/v$PQ_VER/postgresql-$PQ_VER.tar.gz | tar xz && \
-    cd postgresql-$PQ_VER && \
-    CC="musl-gcc -fPIE -pie" LDFLAGS="-L$PREFIX/lib" CFLAGS="-I$PREFIX/include" ./configure \
-    --without-readline \
-    --with-openssl \
-    --prefix=$PREFIX --host=x86_64-unknown-linux-musl && \
-    cd src/interfaces/libpq make -s -j$(nproc) all-static-lib && make -s install install-lib-static && \
-    cd ../../bin/pg_config && make -j $(nproc) && make install && \
-    cd .. && rm -rf postgresql-$PQ_VER
+# RUN curl -sSL https://ftp.postgresql.org/pub/source/v$PQ_VER/postgresql-$PQ_VER.tar.gz | tar xz && \
+#     cd postgresql-$PQ_VER && \
+#     CC="musl-gcc -fPIE -pie" LDFLAGS="-L$PREFIX/lib" CFLAGS="-I$PREFIX/include" ./configure \
+#     --without-readline \
+#     --with-openssl \
+#     --prefix=$PREFIX --host=x86_64-unknown-linux-musl && \
+#     cd src/interfaces/libpq make -s -j$(nproc) all-static-lib && make -s install install-lib-static && \
+#     cd ../../bin/pg_config && make -j $(nproc) && make install && \
+#     cd .. && rm -rf postgresql-$PQ_VER
 
 # Build libsqlite3 using same configuration as the alpine linux main/sqlite package
 RUN curl -sSL https://www.sqlite.org/2024/sqlite-autoconf-$SQLITE_VER.tar.gz | tar xz && \
@@ -158,6 +158,11 @@ ENV PATH=/root/.cargo/bin:$PREFIX/bin:$PATH \
     LIBZ_SYS_STATIC=1 \
     DEBIAN_FRONTEND=noninteractive \
     TZ=Etc/UTC
+
+RUN rustup component add rustfmt
+RUN rustup component add clippy
+RUN cargo install cargo-tarpaulin
+RUN cargo install cargo2junit
 
 # Allow ditching the -w /volume flag to docker run
 WORKDIR /volume

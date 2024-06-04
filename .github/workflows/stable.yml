@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  REGISTRY_IMAGE: mgazeel/muslrust
+  REGISTRY_IMAGE: ghcr.io/mgazeel/muslrust-texlive
 
 jobs:
   build:
@@ -21,19 +21,32 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [linux/amd64, linux/arm64]
+        platform: [linux/amd64]
         include:
           - platform: linux/amd64
             dockerfile: Dockerfile.x86_64
             arch: amd64
             target_dir: x86_64-unknown-linux-musl
-          - platform: linux/arm64
-            dockerfile: Dockerfile.arm64
-            arch: arm64
-            target_dir: aarch64-unknown-linux-musl
+        # platform: [linux/amd64, linux/arm64]
+        # include:
+        #   - platform: linux/amd64
+        #     dockerfile: Dockerfile.x86_64
+        #     arch: amd64
+        #     target_dir: x86_64-unknown-linux-musl
+        #   - platform: linux/arm64
+        #     dockerfile: Dockerfile.arm64
+        #     arch: arm64
+        #     target_dir: aarch64-unknown-linux-musl
     steps:
     - uses: actions/checkout@v4
     - uses: extractions/setup-just@v2
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.PAT }}
 
     - name: Check if we need a new stable
       id: stablecheck
@@ -77,14 +90,14 @@ jobs:
         tags: rustmusl-temp
         build-args: |
           CHANNEL=stable
-      if: ${{ steps.stablecheck.outputs.BUILD }}
+      # if: ${{ steps.stablecheck.outputs.BUILD }}
 
-    - name: Run tests
-      if: ${{ steps.stablecheck.outputs.BUILD }}
-      shell: bash
-      run: |
-        docker buildx build --platform ${{ matrix.platform }} --output type=docker -t test-runner - < Dockerfile.test-runner
-        TARGET_DIR=${{ matrix.target_dir }} PLATFORM=${{ matrix.platform }} just test
+    # - name: Run tests
+    #   if: ${{ steps.stablecheck.outputs.BUILD }}
+    #   shell: bash
+    #   run: |
+    #     docker buildx build --platform ${{ matrix.platform }} --output type=docker -t test-runner - < Dockerfile.test-runner
+    #     TARGET_DIR=${{ matrix.target_dir }} PLATFORM=${{ matrix.platform }} just test
 
     # The date/channel/version are expected to be the same on both architectures and are needed for the merge step.
     # We store them here since it makes the merge step a bit easier - it doesn't need to figure out which of the
@@ -93,7 +106,7 @@ jobs:
     # only identifiable by their digest and it appears docker does not let us select an image that way.
     # Not the most elegant, but it works.
     - name: Store tag info
-      if: ${{ steps.stablecheck.outputs.BUILD }}
+      # if: ${{ steps.stablecheck.outputs.BUILD }}
       shell: bash
       run: |
         mkdir -p /tmp/tags
@@ -106,19 +119,20 @@ jobs:
         echo $RUST_VER > /tmp/tags/rust-ver
 
     - name: Tag and push
-      if: ${{ steps.stablecheck.outputs.BUILD }}
+      # if: ${{ steps.stablecheck.outputs.BUILD }}
       shell: bash
       run: |
         RUST_DATE=$(cat /tmp/tags/rust-date)
         RUST_CHANNEL=$(cat /tmp/tags/rust-channel)
         RUST_VER=$(cat /tmp/tags/rust-ver)
 
-        TAG_NAME="${{ matrix.arch }}-${RUST_VER}-${RUST_CHANNEL}-${RUST_DATE}"
+        TAG_NAME="${{ matrix.arch }}-${RUST_VER}-${RUST_CHANNEL}-${RUST_DATE}-2"
 
         docker tag rustmusl-temp ${{ env.REGISTRY_IMAGE }}:$TAG_NAME
+        docker push ${{ env.REGISTRY_IMAGE }}:$TAG_NAME
 
     - name: Upload tags
-      if: ${{ steps.stablecheck.outputs.BUILD }}
+      # if: ${{ steps.stablecheck.outputs.BUILD }}
       uses: actions/upload-artifact@v4
       with:
         name: tags-${{matrix.arch}}
@@ -163,20 +177,9 @@ jobs:
       with:
         images: ${{ env.REGISTRY_IMAGE }}
 
-    - name: Create manifest list and push multi-platform images
-      if: ${{ steps.stablecheck.outputs.BUILD }}
-      run: |
-        RUST_DATE=$(cat /tmp/tags/rust-date)
-        RUST_CHANNEL=$(cat /tmp/tags/rust-channel)
-        RUST_VER=$(cat /tmp/tags/rust-ver)
-
-        for tag in ${RUST_CHANNEL} ${RUST_CHANNEL}-${RUST_DATE} ${RUST_VER}-${RUST_CHANNEL} ${RUST_VER}-${RUST_CHANNEL}-${RUST_DATE}; do
-          docker buildx imagetools create -t ${{ env.REGISTRY_IMAGE }}:$tag \
-            ${{ env.REGISTRY_IMAGE }}:amd64-${RUST_VER}-${RUST_CHANNEL}-${RUST_DATE} \
-            ${{ env.REGISTRY_IMAGE }}:arm64-${RUST_VER}-${RUST_CHANNEL}-${RUST_DATE}
-          done
-
-    - name: Inspect image
-      if: ${{ steps.stablecheck.outputs.BUILD }}
-      run: |
-        docker buildx imagetools inspect ${{ env.REGISTRY_IMAGE }}:latest
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.PAT }}
